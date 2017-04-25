@@ -5,6 +5,7 @@ package proyectodomino;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import Core.Ficha;
 import Core.Jugador;
 import Core.Mesa;
 import Core.Monton;
@@ -27,35 +28,10 @@ public class ProyectoDomino {
         ArrayList<Jugador> jugadores = new ArrayList<>();
 
         Scanner scn = new Scanner(System.in);
-        boolean error = false;
 
-        do {
-            error = false;
-            try {
-                System.out.println("Introduzca Numero de Jugadores");
-                numJugadores = Integer.parseInt(scn.nextLine());
-                if (numJugadores < 2) {
-                    error = true;
-                }
-            } catch (NumberFormatException exc) {
-                System.err.println("Error. Introduzca un número");
-                error = true;
-            }
-        } while (error);
+        numJugadores = introducirNumeroJugadores(scn, numJugadores);//Metodo para introducir el numero de jugadores
 
-        for (int i = 0; i < numJugadores; i++) {
-            Jugador aux;
-            System.out.println("Nombre del jugador : " + (i + 1));
-            if (i == 0) {
-                aux = new Jugador(scn.nextLine(), true);
-                aux.fichasPrincipio(monton);
-                jugadores.add(aux);
-            } else {
-                aux = new Jugador(scn.nextLine(), false);
-                aux.fichasPrincipio(monton);
-                jugadores.add(aux);
-            }
-        }
+        introducirDatosJugadores(scn, numJugadores, monton, jugadores);
 
         boolean fin = false;
 
@@ -73,15 +49,16 @@ public class ProyectoDomino {
                                 + "\t3.- Sacar ficha del Montón\n"
                                 + "\t4.- Ver todas tus fichas\n"
                                 + "\t5.- Ver fichas en la mesa");
+                        System.out.println("Opcion:");
                         int op = scn.nextInt();
                         switch (op) {
                             case 1:
-                                mesa.insertarFichaIzquierda(jugador.elegirFicha());
-                                salirBucle = true;
+                                //mesa.insertarFichaIzquierda(jugador.elegirFicha());
+                                salirBucle = validarJugada(mesa, jugador.elegirFicha(), true);
                                 break;
                             case 2:
-                                mesa.insertarFichaDerecha(jugador.elegirFicha());
-                                salirBucle = true;
+                                //mesa.insertarFichaDerecha(jugador.elegirFicha());2
+                                salirBucle = validarJugada(mesa, jugador.elegirFicha(), false);
                                 break;
                             case 3:
                                 jugador.cogerFichaMonton(monton);
@@ -111,7 +88,78 @@ public class ProyectoDomino {
 
     }
 
-    public static void introducirNumeroJugadores(Scanner scn) {
+    public static int introducirNumeroJugadores(Scanner scn, int numJugadores) {
+
+        boolean error = false;
+
+        do {
+            error = false;
+            try {
+                System.out.println("Introduzca Numero de Jugadores");
+                numJugadores = Integer.parseInt(scn.nextLine());
+                if (numJugadores < 2) {
+                    error = true;
+                }
+                //AQUI
+            } catch (NumberFormatException exc) {
+                System.err.println("Error. Introduzca un número");
+                error = true;
+            }
+        } while (error);
+        return numJugadores;
 
     }
+
+    public static void introducirDatosJugadores(Scanner scn, int numJugadores, Monton monton, ArrayList<Jugador> jugadores) {
+        for (int i = 0; i < numJugadores; i++) {
+            Jugador aux;
+            System.out.println("Nombre del jugador : " + (i + 1));
+            if (i == 0) {
+                aux = new Jugador(scn.nextLine(), true);
+                aux.fichasPrincipio(monton);
+                jugadores.add(aux);
+            } else {
+                aux = new Jugador(scn.nextLine(), false);
+                aux.fichasPrincipio(monton);
+                jugadores.add(aux);
+            }
+        }
+    }
+
+    public static boolean validarJugada(Mesa mesa, Ficha ficha, boolean izquierda) {
+        if (izquierda) {
+            return mesa.insertarIzquierda(ficha);
+        } else {
+            return mesa.insertarDerecha(ficha);
+        }
+    }
+
+    /*public static boolean validarJugada(Mesa mesa, Ficha ficha, boolean izquierda) {
+        boolean fichaValida = false;
+        int numeroFicha;
+        if (!mesa.getFichasMesa().isEmpty()) {
+            if (izquierda) {
+                numeroFicha = mesa.getFichasMesa().getFirst().getIzquierda();
+                if (ficha.getDerecha() == numeroFicha || ficha.getIzquierda() == numeroFicha) {
+                    mesa.insertarFichaIzquierda(ficha);
+                    fichaValida = true;
+                } else {
+                    System.err.println("Ficha no valida, usa otra");
+                    fichaValida = false;
+                }
+            } else {
+                numeroFicha = mesa.getFichasMesa().getFirst().getDerecha();
+                if (ficha.getDerecha() == numeroFicha || ficha.getIzquierda() == numeroFicha) {
+                    mesa.insertarFichaIzquierda(ficha);
+                    fichaValida = true;
+                } else {
+                    System.err.println("Ficha no valida, usa otra");
+                    fichaValida = false;
+                }
+            }
+        } else {
+            mesa.insertarFichaIzquierda(ficha);
+        }
+        return fichaValida;
+    }*/
 }
